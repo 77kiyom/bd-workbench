@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寄样工作台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+        }
+        
+        .card:hover::before {
+            width: 8px;
+        }
+        
+        .card-icon {
+            font-size: 2.5em;
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+        
+        .card-desc {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .card-action {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .card-action:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .quick-links {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        .quick-links h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .link-list {
+            list-style: none;
+        }
+        
+        .link-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .link-item:last-child {
+            border-bottom: none;
+        }
+        
+        .link-item a {
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s ease;
+        }
+        
+        .link-item a:hover {
+            color: #764ba2;
+        }
+        
+        .link-item a::before {
+            content: '→';
+            margin-right: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 寄样工作台</h1>
+        
+        <div class="grid">
+            <!-- 寄样信息整理 -->
+            <div class="card" onclick="runOrganize()">
+                <div class="card-icon">📋</div>
+                <div class="card-title">寄样信息整理</div>
+                <div class="card-desc">
+                    从飞书表格读取寄样信息，自动匹配 SKU、解析地址，生成整理后的数据并回写到「寄样（整理）」子表
+                </div>
+                <button class="card-action">立即运行</button>
+            </div>
+            
+            <!-- 批量录入生成 -->
+            <div class="card" onclick="runBatchEntry()">
+                <div class="card-icon">📦</div>
+                <div class="card-title">批量录入生成</div>
+                <div class="card-desc">
+                    从整理表读取数据，按单价计算总额，拆分成多个 Excel 录入文件（单文件不超 1000 元），输出到桌面
+                </div>
+                <button class="card-action">生成文件</button>
+            </div>
+            
+            <!-- 快递单号同步 -->
+            <div class="card" onclick="runTracking()">
+                <div class="card-icon">🚚</div>
+                <div class="card-title">快递单号同步</div>
+                <div class="card-desc">
+                    从网易营销平台获取快递单号和物流状态，自动回写到整理表，支持增量更新和飞书通知
+                </div>
+                <button class="card-action">同步状态</button>
+            </div>
+            
+            <!-- 查看使用说明 -->
+            <div class="card" onclick="openDocs()">
+                <div class="card-icon">📖</div>
+                <div class="card-title">查看使用说明</div>
+                <div class="card-desc">
+                    打开完整的寄样信息整理使用说明文档，了解详细的操作步骤和注意事项
+                </div>
+                <button class="card-action">打开文档</button>
+            </div>
+        </div>
+        
+        <!-- 快捷链接 -->
+        <div class="quick-links">
+            <h2>🔗 快捷链接</h2>
+            <ul class="link-list">
+                <li class="link-item">
+                    <a href="https://kttfkmbfmy.feishu.cn/sheets/NlFwsEJu6h3QL1tR7SccvEq3nYd" target="_blank">
+                        飞书达人信息表
+                    </a>
+                </li>
+                <li class="link-item">
+                    <a href="https://www.workbuddy.ai/space/d/dDzi175uGsGbPKBHIw7Ozn" target="_blank">
+                        寄样整理技能文档（云端）
+                    </a>
+                </li>
+                <li class="link-item">
+                    <a href="https://www.workbuddy.ai/space/d/l4DX9SzWstfjA311UIyOi3" target="_blank">
+                        寄样信息整理 · 使用说明
+                    </a>
+                </li>
+                <li class="link-item">
+                    <a href="https://yx.mail.netease.com/content-marketing-web#/sampleSheet/list?tab=1" target="_blank">
+                        网易营销平台
+                    </a>
+                </li>
+                <li class="link-item">
+                    <a href="file:///C:/Users/wujie15/Desktop/寄样批量录入" target="_blank">
+                        录入文件输出目录
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function runOrganize() {
+            if (confirm('确定要运行寄样信息整理吗？\n\n这将从飞书表格读取数据并自动处理。')) {
+                alert('请在 WorkBuddy AI 对话框中输入：\n\n"帮我跑寄样整理"');
+            }
+        }
+        
+        function runBatchEntry() {
+            if (confirm('确定要生成批量录入文件吗？\n\n文件将输出到桌面的「寄样批量录入」文件夹。')) {
+                alert('请在 WorkBuddy AI 对话框中输入：\n\n"帮我跑寄样录入"');
+            }
+        }
+        
+        function runTracking() {
+            if (confirm('确定要同步快递单号吗？\n\n这将从网易平台获取最新物流信息。')) {
+                alert('请在 WorkBuddy AI 对话框中输入：\n\n"帮我同步快递单号"');
+            }
+        }
+        
+        function openDocs() {
+            window.open('https://www.workbuddy.ai/space/d/l4DX9SzWstfjA311UIyOi3', '_blank');
+        }
+    </script>
+</body>
+</html>
