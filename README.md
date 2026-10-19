@@ -2,6 +2,10 @@
 
 一个集成式的寄样管理工作台页面，整合了常用的寄样信息处理功能。
 
+**仓库地址**：https://github.com/77kiyom/bd-workbench
+
+修改方法、部署到 GitHub Pages、常用改动位置速查，见 [GITHUB_SETUP.md](GITHUB_SETUP.md)。
+
 ## 功能特性
 
 ### 🎯 核心功能
